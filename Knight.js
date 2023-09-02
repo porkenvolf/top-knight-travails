@@ -1,6 +1,5 @@
 export default class Knight {
-    constructor(start = [3, 3]) {
-        this.start = start;
+    constructor() {
         this.knightMoveRules = [
             [2, 1],
             [2, -1],
