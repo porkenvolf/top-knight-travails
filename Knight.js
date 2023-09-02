@@ -11,31 +11,9 @@ export default class Knight {
             [-1, 2],
             [-1, -2],
         ];
-        this.graphMoves = this.genGraphIterative();
+        this.graphMoves = this.genGraph();
     }
-    genGraphRecursive(start = [0, 0], end = [7, 7], graph = {}) {
-        this.knightMoveRules.forEach((move) => {
-            const a = start;
-            const b = [move[0] + start[0], move[1] + start[1]];
-
-            if (
-                graph[`[${a}][${b}]`] ||
-                graph[`[${b}][${a}]`] ||
-                b[0] > 7 ||
-                b[1] > 7 ||
-                b[0] < 0 ||
-                b[1] < 0
-            ) {
-                return;
-            } else {
-                graph[`[${a}][${b}]`] = { a, b };
-                this.genGraphRecursive(b, end, graph);
-            }
-        });
-
-        return graph;
-    }
-    genGraphIterative() {
+    genGraph() {
         const graph = {};
         for (let x = 0; x <= 7; x++) {
             for (let y = 0; y <= 7; y++) {
@@ -46,22 +24,75 @@ export default class Knight {
                         move[0] < 0 ||
                         move[1] > 7 ||
                         move[1] < 0
-                    ) {
+                    )
                         return;
-                    }
-                    if (graph[`[${x},${y}]`] === undefined)
-                        graph[`[${x},${y}]`] = [];
-                    graph[`[${x},${y}]`].push(move);
+
+                    if (graph[`${x},${y}`] === undefined)
+                        graph[`${x},${y}`] = [];
+
+                    graph[`${x},${y}`].push(move);
                 });
             }
         }
         return graph;
     }
 
-    shortestPath(start = [0, 0], end = [7, 7], path = []) {
-        if (start[0] === end[0] && start[1] === end[1]) {
-            path.push(end);
-            return path;
+    shortestPath(start = [0, 0], end = [7, 7]) {
+        let queue = [start];
+        const alreadyVisited = [];
+        const prepaths = [];
+
+        while (queue.length > 0) {
+            const current = queue.shift();
+            alreadyVisited.push(current);
+            const currentConnections = this.graphMoves[current.toString()];
+
+            for (const item of currentConnections) {
+                if (
+                    !arrayIncludesArray(alreadyVisited, item) &&
+                    !arrayIncludesArray(queue, item)
+                ) {
+                    prepaths.push([current, item]);
+                    queue.push(item);
+                    if (arraysAreEqual(item, end)) {
+                        queue = [];
+                        break;
+                    }
+                }
+            }
+        }
+
+        queue = [end];
+        const path = [];
+        while (queue.length > 0) {
+            const current = queue.shift();
+            for (const prepath of prepaths) {
+                if (arraysAreEqual(prepath[1], current)) {
+                    queue.push(prepath[0]);
+                    path.push(prepath[1]);
+                }
+            }
+        }
+        path.push(start);
+
+        return path.reverse();
+    }
+}
+
+function arraysAreEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
+        return false;
+    }
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
+            return false;
         }
     }
+    return true;
+}
+function arrayIncludesArray(parent, searching) {
+    for (const children of parent) {
+        if (arraysAreEqual(children, searching)) return true;
+    }
+    return false;
 }
