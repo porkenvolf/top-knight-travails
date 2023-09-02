@@ -11,7 +11,7 @@ export default class Knight {
             [-1, 2],
             [-1, -2],
         ];
-        this.graphMoves = this.genGraphRecursive();
+        this.graphMoves = this.genGraphIterative();
     }
     genGraphRecursive(start = [0, 0], end = [7, 7], graph = {}) {
         this.knightMoveRules.forEach((move) => {
@@ -34,5 +34,34 @@ export default class Knight {
         });
 
         return graph;
+    }
+    genGraphIterative() {
+        const graph = {};
+        for (let x = 0; x <= 7; x++) {
+            for (let y = 0; y <= 7; y++) {
+                this.knightMoveRules.forEach((direction) => {
+                    const move = [x + direction[0], y + direction[1]];
+                    if (
+                        move[0] > 7 ||
+                        move[0] < 0 ||
+                        move[1] > 7 ||
+                        move[1] < 0
+                    ) {
+                        return;
+                    }
+                    if (graph[`[${x},${y}]`] === undefined)
+                        graph[`[${x},${y}]`] = [];
+                    graph[`[${x},${y}]`].push(move);
+                });
+            }
+        }
+        return graph;
+    }
+
+    shortestPath(start = [0, 0], end = [7, 7], path = []) {
+        if (start[0] === end[0] && start[1] === end[1]) {
+            path.push(end);
+            return path;
+        }
     }
 }
