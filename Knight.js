@@ -13,7 +13,7 @@ export default class Knight {
         ];
         this.graphMoves = this.genGraphRecursive();
     }
-    genGraphRecursive(start = [0, 0], end = [7, 7], graph = {}, path = []) {
+    genGraphRecursive(start = [0, 0], end = [7, 7], graph = {}) {
         this.knightMoveRules.forEach((move) => {
             const a = start;
             const b = [move[0] + start[0], move[1] + start[1]];
@@ -29,7 +29,7 @@ export default class Knight {
                 return;
             } else {
                 graph[`[${a}][${b}]`] = { a, b };
-                this.knightMovesRecursive(b, end, graph);
+                this.genGraphRecursive(b, end, graph);
             }
         });
 
