@@ -14,7 +14,7 @@ export default class Board {
         for (let i = 0; i < path.length; i++) {
             const x = path[i][0];
             const y = path[i][1];
-            this.board[x][y] = i;
+            this.board[y][x] = i;
         }
         console.table(this.board);
     }
